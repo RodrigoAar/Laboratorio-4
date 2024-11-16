@@ -1,13 +1,19 @@
 import java.util.ArrayList;
 
+/**
+ * Clase utilizada para crear una nueva radio
+ */
 public class Radio {
-    protected boolean frecuencia;
-    protected boolean estado;
-    protected boolean estadollamada;
-    protected double emisora;
-    protected ArrayList<Usuario> contactos;
-    protected double[][] emisoras;
-    protected ArrayList<ArrayList<String>> playlists;
+    protected boolean frecuencia; //determinar si está en AM o FM
+    protected boolean estado; //determinar si se encuentra apagado o encendido
+    protected boolean estadollamada; //determinar si está en llamada o no
+    protected boolean modo; //determinar si está en modo radio o en modo telefono
+    protected boolean reproduccion; //determinar si está reproduciendo alguna cancion
+    protected double emisora; //determinar en que emisora se encuentra
+    protected int volumen; //determinar el volumen 
+    protected ArrayList<Usuario> contactos; //lista de contactos predeterminada 
+    protected double[][] emisoras; //arreglo bidimensional para poder guardar 5 emisoras en 10 canales
+    protected ArrayList<ArrayList<String>> playlists; //lista de playlists predeterminada
 
     /**
      * Metodo para crear una lista de playlists génericas de distinitos tipos de música 
@@ -84,7 +90,10 @@ public class Radio {
         this.frecuencia = true;
         this.estado = false;
         this.estadollamada = false;
+        this.modo = true;
+        this.reproduccion = false;
         this.emisora = 90.00;
+        this.volumen = 12;
         this.emisoras = new double[5][10];
         this.playlists = playlistgenerica();
         this.contactos = contactosgenerica();
@@ -106,8 +115,8 @@ public class Radio {
      * @param fila
      * @param columna
      */
-    public void guardaremisora(int fila, int columna){
-        emisoras[fila][columna] = emisora;
+    public void guardaremisora(int fila, int columna, double emisora1){
+        emisoras[fila][columna] = emisora1;
     }
 
     /**
@@ -125,7 +134,7 @@ public class Radio {
      * @return
      */
     public Usuario obtenerusuario(int pos){
-        Usuario usuario = contactos.get(pos-1);
+        Usuario usuario = contactos.get(pos);
         return usuario;
     }
 
@@ -145,6 +154,180 @@ public class Radio {
         if(estadollamada == true){
             this.estadollamada = false;
         }
+    }
+
+    /**
+     * Metodo getter de estado
+     * @return estado
+     */
+    public boolean getEstado(){
+        return estado;
+    }
+
+    /**
+     * Metodo getter de emisora
+     * @return emisora en formato string para agregarlo a un JLabel
+     */
+    public String getEmisora(){
+        String mensaje = "" + emisora;
+        return mensaje;
+    }
+
+    /**
+     * Metodo getter de volumen
+     * @return volumen en String para poder agregarlo a un Jlabel
+     */
+    public String getVolumen(){
+        return "" + volumen;
+    }
+
+    /**
+     * Metodo getter de modo
+     * @return modo
+     */
+    public boolean getModo(){
+        return modo;
+    }
+
+    /**
+     * Metodo getter de frecuencia
+     * @return frecuencia
+     */
+    public boolean getFrecuencia(){
+        return frecuencia;
+    }
+
+    /**
+     * metodo getter del estado de reproducción 
+     * @return reproduccion
+     */
+    public boolean getReproduccion(){
+        return reproduccion;
+    }
+
+    /**
+     * metodo getter para las playlists predeterminadas
+     * @return lista de playlists
+     */
+    public ArrayList<ArrayList<String>> getPlaylists(){
+        return playlists;
+    }
+
+    /**
+     * Metodo setter para modo
+     */
+    public void setModo(){
+        if(modo == true){
+            this.modo = false;
+        }else{
+            this.modo = true;
+        }
+    }
+
+    /**
+     * Metodo setter para estado de llamada
+     */
+    public void setEstadollamada(){
+        if(estadollamada == true){
+            this.estadollamada = false;
+        }else{
+            this.estadollamada = true;
+        }
+    }
+
+    /**
+     * metodo setter para frecuencia, en este caso cambiar de fm a am y visceversa
+     */
+    public void setFrecuencia(){
+        if(frecuencia == true){
+            this.frecuencia = false;
+            this.emisora = 70.00;
+        }else{
+            this.frecuencia = true;
+            this.emisora = 90.00;
+        }
+    }
+
+    /**
+     * metodo setter para volumen, subir o bajar  volumen
+     * @param i determinante para subir o bajar
+     */
+    public void volumen(int i){
+        if(i==1){
+            this.volumen = volumen + 1;
+        } else if( i != 1 && volumen >0){
+            this.volumen = volumen - 1;
+        }
+    }
+
+    /**
+     * metodo setter para emisora, cambiar la emisora
+     * @param i determinante para subir o bajar
+     */
+    public void emisora(int i){
+        if(frecuencia == true){
+            if( i == 1){
+                this.emisora = emisora + 0.5;
+            }else if( i!= 1 && 88<=emisora){
+                this.emisora = emisora - 0.5;
+            }
+        }else{
+            if(i== 1 && emisora<=87){
+                this.emisora = emisora + 0.5;
+            }else{
+                this.emisora = emisora - 0.5;
+            }
+        }
+    }
+
+    /**
+     * Metodo getter para obtener la lista de contactos predeterminada
+     * @return contactos
+     */
+    public ArrayList<Usuario> getContactos(){
+        return contactos;
+    }
+
+    /**
+     * Metodo para cambiar cancion
+     * @param nombre cancion que se está reproduciendo
+     * @param lista indice de la playlist a la que pertenece
+     * @param i parametro para seleccionar la siguiente o la anterior canción 
+     * @return nueva canción 
+     */
+    public String cambiarcancion(String nombre, int lista, int i){
+        String mensaje = "";
+        int index = playlists.get(lista).indexOf(nombre);
+        int cond = playlists.get(lista).size();
+        if(i==1 && index <cond){
+            mensaje = playlists.get(lista).get(index+1);
+        }else if(i!=1 && 0<index){
+            mensaje = playlists.get(lista).get(index-1);
+        }
+        return mensaje;
+    }
+
+    /**
+     * Metodo setter para cambiar el estado de reproducción
+     */
+    public void setReproduccion(){
+        if(reproduccion == false){
+            this.reproduccion = true;
+        }else{
+            this.reproduccion = false;
+        }
+    }
+
+    /**
+     * Metodo getter para obtener los contacots en formato String
+     * @return lista de contactos en formato String
+     */
+    public ArrayList<String> getContactosString(){
+        ArrayList<String> cont = new ArrayList<>();
+        for(Usuario i: contactos){
+            cont.add(i.getNombre() + i.getNumero());
+        }
+        return cont;
     }
 
 }
